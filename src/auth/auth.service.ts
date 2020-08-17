@@ -37,7 +37,12 @@ export class AuthService {
               reject(new UnauthorizedException('Password did not match'));
           } else {
             const token = jwt.sign({ email: userFromDb.email }, 'gdtgdg334fffwdef');
-            resolve({token});
+            let authenticatedUser = {...userFromDb.toObject(), id: userFromDb._id, token}
+            delete authenticatedUser['password'];
+            delete authenticatedUser['__v'];
+            delete authenticatedUser['_id'];
+
+            resolve(authenticatedUser);
           }
       });
     });
