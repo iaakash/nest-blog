@@ -1,7 +1,8 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
-import { User } from 'src/auth/user.decorator';
+import { UserDecorator } from 'src/auth/user.decorator';
 import { AuthGuard } from '@nestjs/passport';
+import { User } from './schema/user.entity';
 
 @Controller('user')
 export class UserController {
@@ -11,7 +12,7 @@ export class UserController {
 
     @Get()
     @UseGuards(AuthGuard())
-    findCurrentUser(@User() username: any) {
-        return this.userService.findByUsername(username);
+    findCurrentUser(@UserDecorator() user: User) {
+        return this.userService.findByUsername(user.username);
     }
 }

@@ -10,19 +10,23 @@ import { JwtStrategy } from './jwt.strategy';
 
 const passportModule = PassportModule.register({ defaultStrategy: 'jwt' });
 
+const jwtModule =  JwtModule.register({
+  secret: process.env.JWT_SECRET,
+  signOptions: { expiresIn: '3600s' },
+});
+
+const mongooseModule = MongooseModule.forFeature([{ 
+  name: User.name, 
+  schema: UserSchema
+}]);
+
 @Module({
-  imports: [MongooseModule.forFeature([{ 
-    name: User.name, 
-    schema: UserSchema
-  }]),
+  imports: [mongooseModule,
   passportModule,
-  JwtModule.register({
-    secret: process.env.JWT_SECRET,
-    signOptions: { expiresIn: '3600s' },
-  }),
+  jwtModule,
 ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
-  exports: [passportModule, JwtStrategy]
+  exports: [passportModule, JwtStrategy, mongooseModule]
 })
 export class AuthModule {}

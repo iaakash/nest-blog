@@ -8,11 +8,11 @@ import { JwtService } from '@nestjs/jwt';
 export class UserService {
     constructor(@InjectModel(User.name) private readonly userModel: Model<User>) {}
     
-    async findByUsername(username: any): Promise<User> {
-        console.log('username', username);
-        const user_name = username.username;
+    async findByUsername(username: string): Promise<User> {
+        // console.log('username', username);
+        // const user_name = username.username;
 
-        const userFromDbByUsername = await this.userModel.findOne({ username: user_name });
+        const userFromDbByUsername = await this.userModel.findOne({ username });
         console.log('userFromDbByUsername', userFromDbByUsername);
         return userFromDbByUsername
     }
