@@ -11,7 +11,6 @@ export class AuthController {
 
     @Post()
     register(@Body(ValidationPipe) regsiterUserDto: CreateUserDto) {
-        console.log('test', regsiterUserDto);
         return this.authService.createUser(regsiterUserDto);
     }
 
@@ -19,7 +18,6 @@ export class AuthController {
     loginUser(
         @Body() user:any
     ) {
-        console.log('user::', user);
         if (!user.email || !user.password) {
             throw new UnauthorizedException('Please Enter Email and Password');
         }
