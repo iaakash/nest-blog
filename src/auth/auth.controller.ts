@@ -1,6 +1,7 @@
-import { Controller, Post, Body, UsePipes, ValidationPipe, UnauthorizedException } from '@nestjs/common';
+import { Controller, Post, Body, UsePipes, ValidationPipe, UnauthorizedException, UseFilters } from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { AuthService } from './auth.service';
+import { HttpExceptionFilter } from 'src/shared/http-exception.filter';
 
 @Controller('users')
 export class AuthController {
@@ -10,6 +11,7 @@ export class AuthController {
     }
 
     @Post()
+    @UseFilters(new HttpExceptionFilter())
     register(@Body(ValidationPipe) regsiterUserDto: CreateUserDto) {
         return this.authService.createUser(regsiterUserDto);
     }

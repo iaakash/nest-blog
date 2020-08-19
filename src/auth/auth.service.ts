@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from '../user/schema/user.entity';
 import { Model } from 'mongoose';
@@ -15,7 +15,8 @@ export class AuthService {
   ) {}
 
   async createUser(user: CreateUserDto) {
-    const hash = await bcrypt.hash(user.password, 10);
+    try {
+      const hash = await bcrypt.hash(user.password, 10);
     const newUser = new this.userModel({
       username: user.username,
       email: user.email,
@@ -23,18 +24,26 @@ export class AuthService {
     });
     let payloadToSign = {username: newUser.username  };
     const userCreated = await newUser.save();
+    console.log('userCreated::', userCreated);
 
-    const token = this.jwtService.sign(payloadToSign);
-    const userCreatedObj = userCreated.toObject();
-
-    delete userCreatedObj['password'];
-    delete userCreatedObj['__v'];
-    delete userCreatedObj['_id'];
-
-    let newUserToSend = {user:{...userCreatedObj, token,  id: userCreatedObj._id,  }};
     
-    return newUserToSend;
-  }
+      const token = this.jwtService.sign(payloadToSign);
+      const userCreatedObj = userCreated.toObject();
+  
+      delete userCreatedObj['password'];
+      delete userCreatedObj['__v'];
+      delete userCreatedObj['_id'];
+  
+      let newUserToSend = {user:{...userCreatedObj, token,  id: userCreatedObj._id,  }};
+      
+      return newUserToSend;
+    } catch (error) {
+      throw new HttpException('Custom Error', HttpStatus.BAD_REQUEST);
+    }
+    
+    }
+    
+  
 
   async loginUser(user) {
     const userFromDb = await this.userModel.findOne({ email: user.email });
