@@ -19,9 +19,14 @@ export class User extends Document {
     image: string;
 
     
-    @Exclude()
-    @Prop() 
+    @Prop({type: String, select: false}) 
     password: string
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.set('toJSON', {
+    virtuals: true,
+    versionKey:false,
+    transform: function (doc, ret) {   delete ret._id  }
+  });
