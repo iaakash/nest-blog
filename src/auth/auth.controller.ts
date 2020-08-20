@@ -11,7 +11,7 @@ export class AuthController {
     }
 
     @Post()
-    @UseFilters(new HttpExceptionFilter())
+    // @UseFilters(new HttpExceptionFilter())
     register(@Body(ValidationPipe) regsiterUserDto: CreateUserDto) {
         return this.authService.createUser(regsiterUserDto);
     }

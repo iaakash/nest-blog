@@ -15,6 +15,7 @@ export class AuthService {
   ) {}
 
   async createUser(user: CreateUserDto) {
+    console.log('user', user);
     try {
       const hash = await bcrypt.hash(user.password, 10);
     const newUser = new this.userModel({
@@ -22,10 +23,10 @@ export class AuthService {
       email: user.email,
       password: hash,
     });
-    let payloadToSign = {username: newUser.username  };
+    
     const userCreated = await newUser.save();
     console.log('userCreated::', userCreated);
-
+    let payloadToSign = {username: userCreated.username, email:userCreated.email, id: userCreated._id   };
     
       const token = this.jwtService.sign(payloadToSign);
       const userCreatedObj = userCreated.toObject();
@@ -53,7 +54,7 @@ export class AuthService {
           if(!result) {
               reject(new UnauthorizedException('Password did not match'));
           } else {
-            let payloadToSign = {username: userFromDb.username  };
+            let payloadToSign = {username: userFromDb.username, id: userFromDb._id, email: userFromDb.email  };
   
 
     const token = this.jwtService.sign(payloadToSign);

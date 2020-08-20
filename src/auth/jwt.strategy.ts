@@ -15,6 +15,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload: any) {
       // whatever we add here as payload can be retreived by token: check for example how we manage to extract username in user repo
-    return { username: payload.username };
+    return { username: payload.username, email:payload.email, id: payload.id  };
   }
 }
