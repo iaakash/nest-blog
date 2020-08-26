@@ -12,7 +12,7 @@ export class UserService {
         // console.log('username', username);
         // const user_name = username.username;
 
-        const userFromDbByUsername = await this.userModel.findOne({ username });
+        const userFromDbByUsername = await await this.userModel.findOne({ username }).populate('followers')
        
         return userFromDbByUsername
     }
@@ -27,6 +27,26 @@ export class UserService {
           return updatedUser;
         //   return this.shapeCourse(updatedCourse);
       
+    }
+
+    async followUser(usernameToFollow, userWantsToFollow) {
+        const userToFollowFromDb = await this.findByUsername(usernameToFollow);
+        const userWantsToFollowFromDb = await this.findByUsername(userWantsToFollow.username);
+
+        userToFollowFromDb.followersList.push(userWantsToFollow.id);
+        userWantsToFollowFromDb.followingList.push(userToFollowFromDb.id);
+
+        const profileRequested = await userToFollowFromDb.save();
+        const currentUser = await userWantsToFollowFromDb.save();
+        return await profileRequested.toProfile(currentUser);
+
+        // return profileRequested.toP
+        // return this.processUserProfileForView(profileRequested, currentUser);
         
+    }
+
+     processUserProfileForView(profileRequested, currentUser) {
+        return {...profileRequested.toObject(), following: true};
+
     }
 }

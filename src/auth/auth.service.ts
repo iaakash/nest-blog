@@ -47,10 +47,14 @@ export class AuthService {
   
 
   async loginUser(user) {
-    const userFromDb = await this.userModel.findOne({ email: user.email });
+    console.log(user);
+    const userFromDb = await this.userModel.findOne({ email: user.email }).select('+password');
+    // .select('username, _id, email +password');
+    console.log(userFromDb);
     return new Promise((resolve, reject) => {
       // Load hash from your password DB.
       bcrypt.compare(user.password, userFromDb.password, (err, result) => {
+        // console.log(result);
           if(!result) {
               reject(new UnauthorizedException('Password did not match'));
           } else {
@@ -60,9 +64,9 @@ export class AuthService {
     const token = this.jwtService.sign(payloadToSign);
 
             let authenticatedUser = {...userFromDb.toObject(), id: userFromDb._id, token}
-            delete authenticatedUser['password'];
-            delete authenticatedUser['__v'];
-            delete authenticatedUser['_id'];
+            // delete authenticatedUser['password'];
+            // delete authenticatedUser['__v'];
+            // delete authenticatedUser['_id'];
 
             resolve(authenticatedUser);
           }
